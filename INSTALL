@@ -1,0 +1,50 @@
+Installation
+============
+
+Assumes you are running all commands from the root of the source directory (i.e. where you found this INSTALL file).
+
+Pre-req: Install buildozer (and its dependencies)
+-------------------------------------------------
+
+See https://github.com/kivy/buildozer
+
+Pre-req: Google play services
+-----------------------------
+
+Run
+
+    ~/.buildozer/android/platform/android-sdk-21/tools/android to get the google-play-services_lib from extras
+
+Then
+
+    cp -r ~/.buildozer/android/platform/android-sdk-21/extras/google/google_play_services/libproject/google-play-services_lib libs
+    ~/.buildozer/android/platform/android-sdk-21/tools/android update lib-project --path libs/google-play-services_lib --target 1
+
+Also copy from google extras Android Support:
+
+    cp -r ~/.buildozer/android/platform/android-sdk-21/extras/android/support/v4/android-support-v4.jar
+
+
+To build for the google play store
+----------------------------------
+
+(NOTE: may need to install jarsigner first)
+
+One-time generation of a key (current key is already in the repo):
+
+    keytool -genkey -v -keystore 7words.keystore -alias 7words -keyalg RSA -keysize 2048 -validity 10000
+
+One-time to make sure the google play service ID's are read into the app (currently this step is not needed):
+
+    rsync -rav ./google_play_ids.xml .buildozer/android/platform/python-for-android/dist/7words/res/values/
+
+Then run:
+
+    buildozer android release
+    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore 7words.keystore bin/7Words-0.1.5-release-unsigned.apk 7words
+    ~/.buildozer/android/platform/android-sdk-21/build-tools/23.0.1/zipalign -v 4 bin/7Words-0.1.5-release-unsigned.apk bin/7words-0.1.5-release.apk
+
+Alternatively, the script will do the 3 steps above for you and deploy to the device (assuming its plugged in):
+
+    test_android_release
+

@@ -1,0 +1,6 @@
+#buildozer android release
+rm bin/7words-0.1.5-release.apk
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore 7words.keystore bin/7Words-0.1.5-release-unsigned.apk 7words
+~/.buildozer/android/platform/android-sdk-21/build-tools/19.1.0/zipalign -v 4 bin/7Words-0.1.5-release-unsigned.apk bin/7words-0.1.5-release.apk
+~/.buildozer/android/platform/android-sdk-21/platform-tools/adb install -r bin/7words-0.1.5-release.apk
+~/.buildozer/android/platform/android-sdk-21/platform-tools/adb logcat |grep python

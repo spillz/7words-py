@@ -1,0 +1,302 @@
+#:kivy 1.8
+
+<TextButton@Button>:
+	color: 1, 1, 1, 1
+	background_color: 0xbb / 255., 0xad / 255., 0xa0 / 255., 1.
+#	background_normal: 'data/round.png'
+#	background_down: 'data/round.png'
+	size_hint_y: None
+	height: '48dp'
+	font_size: '20dp'
+	bold: True
+
+<Star>:
+    color: [0.5,0.5,0.5,1.0]
+    alt_color: [0.2,0.7,0.2,1.0]
+    number_color: [0.99,0.99,0,1.0]
+    text_color: [1,1,1,1]
+    target:999
+    active: False
+    canvas:
+        Color:
+            rgba: self.alt_color if self.active else self.color
+        Triangle:
+            points: [self.x, (self.y+self.center_y)/2, self.right, (self.y+self.center_y)/2, self.center_x, self.top]
+        Triangle:
+            points: [self.x, (self.top+self.center_y)/2, self.right, (self.top+self.center_y)/2, self.center_x, self.y]
+    Label:
+        color: root.text_color
+        text: str(root.target)
+        size: root.size
+        font_size: self.size[1]/3
+        center: root.center
+
+
+<GooglePlayPopup>:
+	size_hint: None, None
+	title: 'Connect to Google Play'
+	size: '300dp', '300dp'
+#	background: 'data/popup.png'
+	separator_color: 0x77 / 255., 0x6e / 255., 0x65 / 255., 1.
+	title_size: '20sp'
+
+	BoxLayout:
+
+		orientation: 'vertical'
+		spacing: '10dp'
+		padding: '10dp'
+
+		Label:
+			font_size: '20sp'
+			color: 0x77 / 255., 0x6e / 255., 0x65 / 255., 1.
+			bold: True
+			text: 'Do you want to connect to Google Play for Leaderboards and Achievements?'
+			text_size: self.width - dp(20), None
+			halign: 'center'
+
+		BoxLayout:
+			size_hint_y: None
+			height: '68dp'
+			spacing: '10dp'
+			TextButton:
+				text: 'No'
+				on_press: root.dismiss()
+			TextButton:
+				text: 'Yes'
+				on_press: app.activate_google_play(); root.dismiss()
+
+
+<Tile>:
+    letter: 'A'
+    value: 1
+    w_label: label_text
+    size_hint: (None, None)
+    canvas:
+        Color:
+            rgba: app.colors['tile_selected'] if self.selected else app.colors['tile'] if self.active else app.colors['tile_inactive']
+        Quad:
+            points: [self.pos[0]+0,self.pos[1]+0, self.pos[0]+self.size[0],self.pos[1]+0, self.pos[0]+self.size[0],self.pos[1]+self.size[1], self.pos[0]+0,self.pos[1]+self.size[1]]
+    Label:
+        id: label_text
+        halign: 'center'
+        size: root.size
+        pos: root.pos
+        font_size: root.size[0]/1.5
+        text: str(root.letter)
+        color: app.colors['tile_letter_text']
+    Label:
+        id: label_value
+        halign: 'center'
+        size: root.size[0]/4,root.size[1]/4
+        pos: root.pos
+        font_size: root.size[0]/5
+        text: str(root.value) if root.letter!='' else ''
+        color: app.colors['tile_letter_text']
+
+<ScoreBar@BoxLayout>:
+    size_hint: (None, None)
+    score: 0
+    hi_score: 0
+    game_id: -1
+    orientation: 'horizontal'
+    target: [50, 150, 300]
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint: (1, 0.33)
+            text: 'SCORE'
+            color: app.colors['score_text']
+            font_size: self.size[1]/1.2
+            text_size: self.size
+            halign: 'left'
+            valign: 'bottom'
+        Label:
+            size_hint: (1, 0.67)
+            text: str(root.score)
+            color: app.colors['score_text']
+            font_size: self.size[1]/1.2
+            text_size: self.size
+            halign: 'left'
+            valign: 'top'
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint: (1, 0.33)
+            text: 'GAME %i'%(root.game_id) if root.game_id>0 else 'RANDOM GAME'
+            color: app.colors['score_text']
+            font_size: self.size[1]/1.2
+            text_size: self.size
+            halign: 'center'
+            valign: 'top'
+        BoxLayout:
+            size_hint: (1, 0.67)
+            spacing: 10
+            padding: [(self.size[0]-3*(10+self.size[1]))/2, 0]
+            orientation: 'horizontal'
+            Star:
+                active: root.hi_score >= root.target[0]
+                target: root.target[0]
+                color: app.colors['bronze_off']
+                alt_color: app.colors['bronze']
+                size_hint: (None,1)
+                width: self.size[1]
+            Star:
+                active: root.hi_score >= root.target[1]
+                target: root.target[1]
+                color: app.colors['silver_off']
+                alt_color: app.colors['silver']
+                size_hint: (None,1)
+                width: self.size[1]
+            Star:
+                active: root.hi_score >= root.target[2]
+                target: root.target[2]
+                color: app.colors['gold_off']
+                alt_color: app.colors['gold']
+                size_hint: (None,1)
+                width: self.size[1]
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint: (1, 0.33)
+            text: 'BEST'
+            color: app.colors['score_text']
+            font_size: self.size[1]/1.2
+            text_size: self.size
+            halign: 'right'
+            valign: 'bottom'
+        Label:
+            size_hint: (1, 0.67)
+            text: str(root.hi_score)
+            color: app.colors['score_text']
+            font_size: self.size[1]/1.2
+            text_size: self.size
+            halign: 'right'
+            valign: 'top'
+
+<StatusBar@BoxLayout>:
+    size_hint: (None, None)
+    orientation: 'vertical'
+    w_word_label: word_label
+    word: ''
+    word_score: 0
+    canvas.before:
+        Color:
+            rgba: app.colors['word_score_background'] if root.word!='' else app.colors['background']
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: 'horizontal'
+        Label:
+            id: word_label
+            text: '%s for %i'%(root.word, root.word_score) if root.word_score>0 else root.word if root.word_score<0 else ''
+            font_size: root.size[1]/1.5
+            color: app.colors['word_score_text']
+
+<MessageBar@BoxLayout>:
+    size_hint: (None, None)
+    orientation: 'vertical'
+    message: ''
+    Label:
+        text: root.message
+        font_size: root.size[1]/1.5
+        color: app.colors['score_text']
+
+
+<MenuLabel@Label>:
+    active: True
+    canvas.before:
+        Color:
+            rgba: app.colors['menu_button_background']
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    font_size: self.size[1]/2.0
+    color: app.colors['menu_button_foreground'] if self.active else app.colors['menu_button_foreground_disabled']
+
+<InstructionsLabel@Label>:
+    canvas.before:
+        Color:
+            rgba: app.colors['checker']
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Instructions@BoxLayout>:
+    m_scrollview: scroller
+    size_hint: (1, 1)
+    orientation: 'vertical'
+    padding: (0.1*self.size[0], 0.05*self.size[1])
+    spacing: int(0.01*self.size[0])
+    canvas.before:
+        Color:
+            rgba: [0,0,0,0.5]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    InstructionsLabel:
+        left: 0.1*root.size[0]
+        size_hint: (1,0.1)
+        text: 'How to Play'
+        text_size: (self.size[0]*0.9, self.size[1])
+        font_size: '32dp'
+        valign: 'middle'
+        halign: 'center'
+    ScrollView:
+        id: scroller
+        left: 0.1*root.size[0]
+        size_hint: (None, None)
+        size: (0.8*root.size[0], 0.8*root.size[1])
+#        do_scroll_y: True
+#        scroll_y: 0
+        InstructionsLabel:
+            size_hint_y: None
+            height: max(self.texture_size[1], 0.8*root.size[1])
+            text_size: 0.9*self.width, None
+            text: 'Objective: Complete 7 words and amass the largest score you can.\n\n' 'Play: For each row, use one or more letters in the free stack (top of screen) and the current active row to form a word by touching the letter tiles in sequence. A score prompt will show for a valid word, which you can press to score the word. Press any of the selected letters to reset the current word.\n\n' 'Scoring: Each word scores the sum of the tile values multiplied by the length of the word.\n\n' 'End game: The game ends when you have completed all 7 words or you can\'t form a valid word.\n\n'
+            halign: 'left'
+            valign: 'middle'
+            font_size: '20dp'
+
+
+<Menu@BoxLayout>:
+    size_hint: (None, None)
+    orientation: 'vertical'
+    hadj: max(0.1 * self.size[0], (self.size[0] - self.size[1])/2 + 0.1*self.size[0])
+    vadj: 0.15 * self.size[1]
+    padding: [self.hadj, self.vadj]
+    spacing: int(0.01*self.size[1])
+    next_game: False
+    prev_game: False
+    canvas.before:
+        Color:
+            rgba: [0,0,0,0.5]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    MenuLabel:
+        text: 'Restart Game'
+        value: 1
+    MenuLabel:
+        text: 'Next Game'
+        value: 2
+        active: root.next_game
+    MenuLabel:
+        text: 'Previous Game'
+        value: 3
+        active: root.prev_game
+    MenuLabel:
+        text: 'Instructions'
+        value: 4
+    MenuLabel:
+        text: 'Leaderboard'
+        value: 5
+    MenuLabel:
+        text: 'Achievements'
+        value: 6
+    MenuLabel:
+        text: 'Theme'
+        value: 7
+    MenuLabel:
+        text: 'Quit'
+        value: 8
